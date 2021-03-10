@@ -4,6 +4,7 @@ package jp.page3.anagrammaker.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,8 @@ import com.atilika.kuromoji.ipadic.Tokenizer;
 @RestController
 @RequestMapping("word")
 public class WordsController {
+	
+	@CrossOrigin
 	@GetMapping
 	public List<Token> get(
 			@RequestParam("w") String word,
