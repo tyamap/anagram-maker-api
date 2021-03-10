@@ -15,7 +15,7 @@ import com.atilika.kuromoji.ipadic.Token;
 import com.atilika.kuromoji.ipadic.Tokenizer;
 
 @RestController
-@RequestMapping("sentence")
+@RequestMapping("word")
 public class WordsController {
 	@GetMapping
 	public List<Token> get(
