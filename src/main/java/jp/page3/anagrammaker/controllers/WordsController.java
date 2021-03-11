@@ -82,6 +82,9 @@ public class WordsController {
 						}
 					}
 					break;
+				default:
+					response.add(token);
+					break;
 				}
 			}
 		}
