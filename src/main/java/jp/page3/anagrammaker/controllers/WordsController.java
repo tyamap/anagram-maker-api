@@ -1,7 +1,8 @@
 package jp.page3.anagrammaker.controllers;
 
-
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,20 +19,70 @@ import com.atilika.kuromoji.ipadic.Tokenizer;
 @RestController
 @RequestMapping("word")
 public class WordsController {
-	
+
 	@CrossOrigin
 	@GetMapping
 	public List<Token> get(
 			@RequestParam("w") String word,
-			@RequestParam("mn") Integer max) {
-				Tokenizer tokenizer = new Tokenizer();
+			@RequestParam("mn") Integer max,
+			@RequestParam("t") String target,
+			@RequestParam("vob") Integer pvob,
+			@RequestParam("ajob") Integer pajob,
+			@RequestParam("avob") Integer pavob) {
+		Tokenizer tokenizer = new Tokenizer();
 		List<String> result = this.permutation(word, max);
 		List<Token> response = new ArrayList<>();
+
+		List<String> targets = Arrays.asList(target.split(" "));
+		System.out.println(targets);
+		boolean vob = pvob == 1;
+		boolean ajob = pajob == 1;
+		boolean avob = pavob == 1;
 
 		for (String w : result) {
 			List<Token> tokens = tokenizer.tokenize(w);
 			if (tokens.size() == 1 && tokens.get(0).isKnown()) {
-				response.add(tokens.get(0));
+				Token token = tokens.get(0);
+				switch (token.getPartOfSpeechLevel1()) {
+				case "名詞":
+					if (targets.contains("n")) {
+						response.add(token);
+					}
+					break;
+				case "動詞":
+					if (targets.contains("v")) {
+						if (vob) {
+							if (token.getBaseForm().equals(token.getSurface())) {
+								response.add(token);
+							}
+						} else {
+							response.add(token);
+						}
+					}
+					break;
+				case "形容詞":
+					if (targets.contains("aj")) {
+						if (ajob) {
+							if (token.getBaseForm().equals(token.getSurface())) {
+								response.add(token);
+							}
+						} else {
+							response.add(token);
+						}
+					}
+					break;
+				case "副詞":
+					if (targets.contains("av")) {
+						if (avob) {
+							if (token.getBaseForm().equals(token.getSurface())) {
+								response.add(token);
+							}
+						} else {
+							response.add(token);
+						}
+					}
+					break;
+				}
 			}
 		}
 		return response;
@@ -48,6 +99,6 @@ public class WordsController {
 				result.add(String.join("", a));
 			}
 		}
-		return result;
+		return result = new ArrayList<String>(new HashSet<>(result));
 	}
 }
