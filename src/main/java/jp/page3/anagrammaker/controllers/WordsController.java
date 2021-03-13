@@ -6,9 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.uncommons.maths.combinatorics.CombinationGenerator;
 import org.uncommons.maths.combinatorics.PermutationGenerator;
@@ -16,31 +16,27 @@ import org.uncommons.maths.combinatorics.PermutationGenerator;
 import com.atilika.kuromoji.ipadic.Token;
 import com.atilika.kuromoji.ipadic.Tokenizer;
 
+import jp.page3.anagrammaker.models.WordRequestModel;
+
 @RestController
 @RequestMapping("word")
 public class WordsController {
 
 	@CrossOrigin
-	@GetMapping
-	public List<Token> get(
-			@RequestParam("w") String word,
-			@RequestParam("mn") Integer max,
-			@RequestParam("t") String target,
-			@RequestParam("vob") Integer pvob,
-			@RequestParam("ajob") Integer pajob,
-			@RequestParam("avob") Integer pavob) {
+	@PostMapping
+	public List<Token> post(
+			@RequestBody WordRequestModel r) {
+
 		Tokenizer tokenizer = new Tokenizer();
-		List<String> result = this.permutation(word, max);
+		List<String> result = this.permutation(r.w, r.mn);
 		List<Token> response = new ArrayList<>();
+		List<String> targets = Arrays.asList(r.t);
+		boolean vb = r.vob == 1;
+		boolean ajb = r.ajob == 1;
+		boolean avb = r.avob == 1;
 
-		List<String> targets = Arrays.asList(target.split(" "));
-		System.out.println(targets);
-		boolean vob = pvob == 1;
-		boolean ajob = pajob == 1;
-		boolean avob = pavob == 1;
-
-		for (String w : result) {
-			List<Token> tokens = tokenizer.tokenize(w);
+		for (String word : result) {
+			List<Token> tokens = tokenizer.tokenize(word);
 			if (tokens.size() == 1 && tokens.get(0).isKnown()) {
 				Token token = tokens.get(0);
 				switch (token.getPartOfSpeechLevel1()) {
@@ -51,7 +47,7 @@ public class WordsController {
 					break;
 				case "動詞":
 					if (targets.contains("v")) {
-						if (vob) {
+						if (vb) {
 							if (token.getBaseForm().equals(token.getSurface())) {
 								response.add(token);
 							}
@@ -62,7 +58,7 @@ public class WordsController {
 					break;
 				case "形容詞":
 					if (targets.contains("aj")) {
-						if (ajob) {
+						if (ajb) {
 							if (token.getBaseForm().equals(token.getSurface())) {
 								response.add(token);
 							}
@@ -73,7 +69,7 @@ public class WordsController {
 					break;
 				case "副詞":
 					if (targets.contains("av")) {
-						if (avob) {
+						if (avb) {
 							if (token.getBaseForm().equals(token.getSurface())) {
 								response.add(token);
 							}
@@ -83,7 +79,9 @@ public class WordsController {
 					}
 					break;
 				default:
-					response.add(token);
+					if(targets.contains("o")) {
+						response.add(token);
+					}
 					break;
 				}
 			}
