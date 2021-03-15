@@ -15,7 +15,7 @@
 	<name>anagram-maker</name>
 	<description>anagram maker</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>1.8</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -63,20 +63,6 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
-				</configuration>
-			</plugin>
-			<!-- Heroku deploy settings -->
-			<plugin>
-				<groupId>com.heroku.sdk</groupId>
-				<artifactId>heroku-maven-plugin</artifactId>
-				<version>2.0.6</version>
-				<configuration>
-					<jdkVersion>11</jdkVersion>
-					<processTypes>
-						<web>java -Duser.language=ja -Duser.country=JP
-							-Duser.timezone=Asia/Tokyo -jar
-							./target/anagram-maker-0.0.1-SNAPSHOT.jar</web>
-					</processTypes>
 				</configuration>
 			</plugin>
 		</plugins>
