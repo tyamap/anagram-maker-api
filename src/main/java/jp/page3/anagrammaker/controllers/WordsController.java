@@ -22,7 +22,7 @@ import jp.page3.anagrammaker.models.WordRequestModel;
 @RequestMapping("word")
 public class WordsController {
 
-	@CrossOrigin
+	@CrossOrigin(origins = "https://anagram-maker.netlify.app")
 	@PostMapping
 	public List<Token> post(
 			@RequestBody WordRequestModel r) {
