@@ -25,7 +25,7 @@ import jp.page3.anagrammaker.models.WordRequestModel;
 @Validated
 public class WordsController {
 
-	@CrossOrigin
+	@CrossOrigin(origins = "https://anagram-tsukuru.herokuapp.com")
 	@PostMapping("/word")
 	public ResponseEntity<List<Token>> post(@Valid @RequestBody WordRequestModel r) {
 
