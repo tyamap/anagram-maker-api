@@ -5,10 +5,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.validation.Valid;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.uncommons.maths.combinatorics.CombinationGenerator;
 import org.uncommons.maths.combinatorics.PermutationGenerator;
@@ -19,21 +22,20 @@ import com.atilika.kuromoji.ipadic.Tokenizer;
 import jp.page3.anagrammaker.models.WordRequestModel;
 
 @RestController
-@RequestMapping("word")
+@Validated
 public class WordsController {
 
-	@CrossOrigin(origins = "https://anagram-maker.netlify.app")
-	@PostMapping
-	public List<Token> post(
-			@RequestBody WordRequestModel r) {
+	@CrossOrigin
+	@PostMapping("/word")
+	public ResponseEntity<List<Token>> post(@Valid @RequestBody WordRequestModel r) {
 
 		Tokenizer tokenizer = new Tokenizer();
-		List<String> result = this.permutation(r.w, r.mn);
+		List<String> result = this.permutation(r.getW(), r.getMn());
 		List<Token> response = new ArrayList<>();
-		List<String> targets = Arrays.asList(r.t);
-		boolean vb = r.vob == 1;
-		boolean ajb = r.ajob == 1;
-		boolean avb = r.avob == 1;
+		List<String> targets = Arrays.asList(r.getT());
+		boolean vb = r.getVob() == 1;
+		boolean ajb = r.getAjob() == 1;
+		boolean avb = r.getAvob() == 1;
 
 		for (String word : result) {
 			List<Token> tokens = tokenizer.tokenize(word);
@@ -79,14 +81,14 @@ public class WordsController {
 					}
 					break;
 				default:
-					if(targets.contains("o")) {
+					if (targets.contains("o")) {
 						response.add(token);
 					}
 					break;
 				}
 			}
 		}
-		return response;
+		return ResponseEntity.ok(response);
 	}
 
 	private List<String> permutation(String word, Integer num) {
