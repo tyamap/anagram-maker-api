@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,23 +16,30 @@ import com.atilika.kuromoji.ipadic.Tokenizer;
 import jp.page3.anagrammaker.models.SentenceRequest;
 
 @RestController
-@Validated
+//@Validated
 public class SentencesController {
 
-	@CrossOrigin(origins = "http://localhost:3000")
+	//	@CrossOrigin(origins = "http://localhost:3000")
 	@PostMapping("/sentences")
-	public ResponseEntity<List<List<Token>>> post(@Valid @RequestBody SentenceRequest r) {
+	public ResponseEntity<List<List<Token>>> post(@RequestBody SentenceRequest r) {
 
 		Tokenizer tokenizer = new Tokenizer();
 		List<String> result = this.permutation(r.getS());
+		List<List<Token>> tmp = new ArrayList<>();
 		List<List<Token>> response = new ArrayList<>();
 
 		for (String sentence : result) {
 			List<Token> tokens = tokenizer.tokenize(sentence);
 			if (tokens.stream().allMatch(t -> t.isKnown())) {
-				response.add(tokens);
+				tmp.add(tokens);
 			}
 		}
+		tmp.stream().sorted((c, n) -> c.size() - n.size()).forEach(t -> {
+			if (response.size() < 500) {
+				response.add(t);
+			}
+		});
+
 		return ResponseEntity.ok(response);
 	}
 
