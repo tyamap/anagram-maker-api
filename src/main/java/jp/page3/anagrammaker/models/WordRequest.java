@@ -11,14 +11,14 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class WordRequestModel {
+public class WordRequest {
 	@NotBlank
 	@Size(max = 15)
 	private String w;
 
 	@NotNull
 	@Min(2)
-	@Max(10)
+	@Max(7)
 	private Integer mn;
 
 	@NotNull

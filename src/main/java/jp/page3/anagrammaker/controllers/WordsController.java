@@ -19,15 +19,15 @@ import org.uncommons.maths.combinatorics.PermutationGenerator;
 import com.atilika.kuromoji.ipadic.Token;
 import com.atilika.kuromoji.ipadic.Tokenizer;
 
-import jp.page3.anagrammaker.models.WordRequestModel;
+import jp.page3.anagrammaker.models.WordRequest;
 
 @RestController
 @Validated
 public class WordsController {
 
 	@CrossOrigin(origins = "https://anagram-maker.netlify.app")
-	@PostMapping("/word")
-	public ResponseEntity<List<Token>> post(@Valid @RequestBody WordRequestModel r) {
+	@PostMapping("/words")
+	public ResponseEntity<List<Token>> post(@Valid @RequestBody WordRequest r) {
 
 		Tokenizer tokenizer = new Tokenizer();
 		List<String> result = this.permutation(r.getW(), r.getMn());

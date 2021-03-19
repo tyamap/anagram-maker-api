@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,7 @@ import jp.page3.anagrammaker.models.SentenceRequest;
 //@Validated
 public class SentencesController {
 
-	//	@CrossOrigin(origins = "http://localhost:3000")
+	@CrossOrigin(origins = "https://anagram-maker.netlify.app")
 	@PostMapping("/sentences")
 	public ResponseEntity<List<List<Token>>> post(@RequestBody SentenceRequest r) {
 
@@ -35,7 +36,7 @@ public class SentencesController {
 			}
 		}
 		tmp.stream().sorted((c, n) -> c.size() - n.size()).forEach(t -> {
-			if (response.size() < 500) {
+			if (response.size() < 300) {
 				response.add(t);
 			}
 		});
