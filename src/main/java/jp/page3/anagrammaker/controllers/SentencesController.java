@@ -15,6 +15,7 @@ import com.atilika.kuromoji.ipadic.Token;
 import com.atilika.kuromoji.ipadic.Tokenizer;
 
 import jp.page3.anagrammaker.models.SentenceRequest;
+import jp.page3.anagrammaker.models.SentenceResponse;
 
 @RestController
 //@Validated
@@ -22,12 +23,12 @@ public class SentencesController {
 
 	@CrossOrigin(origins = "https://anagram-maker.netlify.app")
 	@PostMapping("/sentences")
-	public ResponseEntity<List<List<Token>>> post(@RequestBody SentenceRequest r) {
+	public ResponseEntity<List<List<SentenceResponse>>> post(@RequestBody SentenceRequest r) {
 
 		Tokenizer tokenizer = new Tokenizer();
 		List<String> result = this.permutation(r.getS());
 		List<List<Token>> tmp = new ArrayList<>();
-		List<List<Token>> response = new ArrayList<>();
+		List<List<SentenceResponse>> response = new ArrayList<>();
 
 		for (String sentence : result) {
 			List<Token> tokens = tokenizer.tokenize(sentence);
@@ -35,9 +36,14 @@ public class SentencesController {
 				tmp.add(tokens);
 			}
 		}
+
 		tmp.stream().sorted((c, n) -> c.size() - n.size()).forEach(t -> {
 			if (response.size() < 300) {
-				response.add(t);
+				List<SentenceResponse> lsr = new ArrayList<>();
+				t.forEach(tt -> {
+					lsr.add(SentenceResponse.tokenToSr(tt));
+				});
+				response.add(lsr);
 			}
 		});
 
