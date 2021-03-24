@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,22 +21,38 @@ import jp.page3.anagrammaker.models.SentenceRequest;
 import jp.page3.anagrammaker.models.SentenceResponse;
 
 @RestController
-//@Validated
+@Validated
 public class SentencesController {
 
 	@CrossOrigin(origins = "https://anagram-maker.netlify.app")
 	@PostMapping("/sentences")
-	public ResponseEntity<List<List<SentenceResponse>>> post(@RequestBody SentenceRequest r) {
+	public ResponseEntity<List<List<SentenceResponse>>> post(@Valid @RequestBody SentenceRequest r) {
 
 		Tokenizer tokenizer = new Tokenizer();
 		List<String> result = this.permutation(r.getS());
+		String[] include = r.getInc();
 		List<List<Token>> tmp = new ArrayList<>();
 		List<List<SentenceResponse>> response = new ArrayList<>();
+		boolean f = true;
 
 		for (String sentence : result) {
 			List<Token> tokens = tokenizer.tokenize(sentence);
 			if (tokens.stream().allMatch(t -> t.isKnown())) {
-				tmp.add(tokens);
+				if (include != null && include.length > 0) {
+					for (String i : include) {
+						if (i.length() == 0) {
+							continue;
+						}
+						if (!tokens.stream().anyMatch(t -> t.getSurface().equals(i))) {
+							f = false;
+							break;
+						}
+					}
+				}
+				if (f) {
+					tmp.add(tokens);
+				}
+				f = true;
 			}
 		}
 
